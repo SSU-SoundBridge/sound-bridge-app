@@ -1,0 +1,41 @@
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    - camel_case_types
+    - line_longer_than_80_chars
+    - always_use_package_imports
+    - avoid_dynamic_calls
+    - avoid_empty_else
+    - avoid_print
+    - avoid_returning_null_for_future
+    - avoid_slow_async_io
+    - avoid_type_to_string
+    - avoid_types_as_parameter_names
+    - cancel_subscriptions
+    - close_sinks
+    - empty_statements
+    - hash_and_equals
+    - no_adjacent_strings_in_list
+    - always_declare_return_types
+    - prefer_const_constructors
+    - always_require_non_null_named_parameters
+    - avoid_types_on_closure_parameters
+    - avoid_annotating_with_dynamic
+    - avoid_escaping_inner_quotes
+    - avoid_function_literals_in_foreach_calls
+    - avoid_private_typedef_functions
+    - combinators_ordering
+    - curly_braces_in_flow_control_structures
+    - annotate_overrides
+    - sort_constructors_first
+    - unawaited_futures
+    - directives_ordering
+    - unnecessary_final
+    - unnecessary_parenthesis
+    - conditional_uri_does_not_exist
+    - prefer_single_quotes
+    - await_only_futures
+    - comment_references
+    - prefer_void_to_null
+    - use_key_in_widget_constructors
