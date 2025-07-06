@@ -1,6 +1,6 @@
-name: udangtan_flutter_app
-description: "A new Flutter project."
-publish_to: 'none'
+name: sound_bridge_app
+description: "사운드브릿지 - 로컬 공연 정보 통합 플랫폼"
+publish_to: "none"
 version: 1.0.0+1
 
 environment:
@@ -9,15 +9,43 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   cupertino_icons: ^1.0.8
-  flutter_native_splash: ^2.4.6
+  flutter_native_splash: ^2.2.0
+
+  go_router: ^16.0.0
+
+  http: ^1.1.0
+
+  google_maps_flutter: ^2.2.0
+  geolocator: ^14.0.2
+  permission_handler: ^12.0.1
+
+  provider: ^6.1.1
+
+  shared_preferences: ^2.1.0
+
+  image_picker: ^1.1.2
+  cached_network_image: ^3.3.0
+  flutter_svg: ^2.0.9
+
+  url_launcher: ^6.1.0
+
+  intl: ^0.20.2
+
+  flutter_rating_bar: ^4.0.1
+  flutter_swiper_view: ^1.1.8
+
+  flutter_dotenv: ^5.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 
 flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - .env

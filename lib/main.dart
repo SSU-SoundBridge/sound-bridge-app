@@ -1,40 +1,52 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:sound_bridge_app/app/app_initializer.dart';
+import 'package:sound_bridge_app/app/router.dart';
+import 'package:sound_bridge_app/app/theme.dart';
 
-Future main() async {
+Future<void> main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-  runApp(const MyApp());
-  await Future.delayed(const Duration(milliseconds: 2000), () {
-    if (kDebugMode) {
-      print('success');
-    }
-    FlutterNativeSplash.remove();
-  });
+
+  await AppInitializer.initialize();
+
+  runApp(const SoundBridgeApp());
+
+  FlutterNativeSplash.remove();
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class SoundBridgeApp extends StatelessWidget {
+  const SoundBridgeApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: Scaffold(
-        appBar: AppBar(title: const Text('Flutter Demo Home Page')),
-        body: Center(
-          child: Image.asset(
-            'assets/images/splash-image.png',
-            width: 200, // 원하는 크기로 설정 가능
-            height: 200,
-            fit: BoxFit.contain,
-          ),
-        ),
-      ),
+    return MaterialApp.router(
+      title: 'Sound Bridge',
+      debugShowCheckedModeBanner: false,
+
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system,
+
+      routerConfig: AppRouter.router,
+
+      locale: const Locale('ko', 'KR'),
+      supportedLocales: const [Locale('ko', 'KR'), Locale('en', 'US')],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: const TextScaler.linear(1.0)),
+          child: child!,
+        );
+      },
     );
   }
 }
