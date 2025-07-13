@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.udangtan" "\0"
-            VALUE "FileDescription", "udangtan_flutter_app" "\0"
+            VALUE "CompanyName", "com.soundbridge" "\0"
+            VALUE "FileDescription", "sound_bridge_app" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "udangtan_flutter_app" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2025 com.udangtan. All rights reserved." "\0"
-            VALUE "OriginalFilename", "udangtan_flutter_app.exe" "\0"
-            VALUE "ProductName", "udangtan_flutter_app" "\0"
+            VALUE "InternalName", "sound_bridge_app" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2025 com.soundbridge. All rights reserved." "\0"
+            VALUE "OriginalFilename", "sound_bridge_app.exe" "\0"
+            VALUE "ProductName", "sound_bridge_app" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

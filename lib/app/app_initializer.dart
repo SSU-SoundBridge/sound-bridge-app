@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 
 class AppInitializer {
   static Future<void> initialize() async {
@@ -12,6 +13,17 @@ class AppInitializer {
       await dotenv.load(fileName: '.env');
     } catch (e) {
       debugPrint('환경 변수 로드 실패: $e');
+    }
+
+    // 카카오 SDK 초기화
+    try {
+      KakaoSdk.init(
+        nativeAppKey: dotenv.env['KAKAO_NATIVE_APP_KEY'] ?? '',
+        javaScriptAppKey: dotenv.env['KAKAO_JAVASCRIPT_APP_KEY'] ?? '',
+      );
+      debugPrint('카카오 SDK 초기화 완료');
+    } catch (e) {
+      debugPrint('카카오 SDK 초기화 실패: $e');
     }
 
     SystemChrome.setSystemUIOverlayStyle(

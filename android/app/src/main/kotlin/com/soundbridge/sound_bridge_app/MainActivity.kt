@@ -1,4 +1,4 @@
-package com.udangtan.udangtan_flutter_app
+package com.soundbridge.sound_bridge_app
 
 import io.flutter.embedding.android.FlutterActivity
 

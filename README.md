@@ -33,7 +33,7 @@ Sound Bridge는 재즈 음악을 사랑하는 사람들이 전국의 재즈바�
 Flutter SDK가 설치되어 있는지 확인 후, 프로젝트를 클론합니다:
 `bash
     git clone [repository_url]
-    cd udangtan_flutter_app
+    cd sound_bridge_app
     flutter pub get
     `
 
