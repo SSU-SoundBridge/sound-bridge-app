@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:sound_bridge_app/features/performance/widgets/performance_detail_bottom_sheet.dart';
 import 'package:sound_bridge_app/models/performance_model.dart';
 import 'package:sound_bridge_app/shared/constants/app_colors.dart';
 import 'package:sound_bridge_app/shared/widgets/common_sliver_app_bar.dart';
@@ -240,18 +239,6 @@ class _PerformanceMapPageState extends State<PerformanceMapPage> {
     return markers;
   }
 
-  void _showPerformanceDetails(PerformanceModel performance) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder:
-          (context) => PerformanceDetailBottomSheet(performance: performance),
-    );
-  }
-
   void _onGenreChanged(String genre) {
     setState(() {
       _selectedGenre = genre;
@@ -261,15 +248,6 @@ class _PerformanceMapPageState extends State<PerformanceMapPage> {
     setState(() {
       _isLoading = false;
     });
-  }
-
-  void _onMarkerClick(Map<String, dynamic> data) {
-    String performanceId = data['id'];
-    PerformanceModel performance = _performances.firstWhere(
-      (p) => p.id == performanceId,
-      orElse: () => _performances.first,
-    );
-    _showPerformanceDetails(performance);
   }
 
   @override

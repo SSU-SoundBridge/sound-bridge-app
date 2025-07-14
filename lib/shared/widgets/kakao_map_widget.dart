@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 
-class KakaoMapWidget extends StatefulWidget {
-  final double? latitude;
-  final double? longitude;
-  final List<MapMarker>? markers;
-  final Function(double lat, double lng)? onMapClick;
-  final double? height; // nullable로 변경
-  final bool expanded; // 전체 공간을 채울지 여부
+class MapMarker {
+  const MapMarker({
+    required this.latitude,
+    required this.longitude,
+    required this.title,
+  });
 
+  final double latitude;
+  final double longitude;
+  final String title;
+}
+
+class KakaoMapWidget extends StatefulWidget {
   const KakaoMapWidget({
     super.key,
     this.latitude,
@@ -19,12 +24,18 @@ class KakaoMapWidget extends StatefulWidget {
     this.expanded = false,
   });
 
+  final double? latitude;
+  final double? longitude;
+  final List<MapMarker>? markers;
+  final Function(double lat, double lng)? onMapClick;
+  final double? height; // nullable로 변경
+  final bool expanded; // 전체 공간을 채울지 여부
+
   @override
   State<KakaoMapWidget> createState() => _KakaoMapWidgetState();
 }
 
 class _KakaoMapWidgetState extends State<KakaoMapWidget> {
-  late KakaoMapController _controller;
   List<Marker> _markersList = [];
 
   @override
@@ -48,16 +59,16 @@ class _KakaoMapWidgetState extends State<KakaoMapWidget> {
   }
 
   Widget _buildMap() {
-    final lat = widget.latitude ?? 37.5665;
-    final lng = widget.longitude ?? 126.9780;
+    var lat = widget.latitude ?? 37.5665;
+    var lng = widget.longitude ?? 126.9780;
 
     return KakaoMap(
-      onMapCreated: (KakaoMapController controller) {
-        _controller = controller;
+      onMapCreated: (controller) {
+        // _controller는 사용되지 않으므로 할당하지 않음
       },
       center: LatLng(lat, lng),
       markers: _markersList,
-      onMapTap: (LatLng latLng) {
+      onMapTap: (latLng) {
         if (widget.onMapClick != null) {
           widget.onMapClick!(latLng.latitude, latLng.longitude);
         }
@@ -79,7 +90,7 @@ class _KakaoMapWidgetState extends State<KakaoMapWidget> {
     return Container(
       height: widget.height,
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.withOpacity(0.3)),
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
         borderRadius: BorderRadius.circular(8),
       ),
       child: ClipRRect(
@@ -88,16 +99,4 @@ class _KakaoMapWidgetState extends State<KakaoMapWidget> {
       ),
     );
   }
-}
-
-class MapMarker {
-  final double latitude;
-  final double longitude;
-  final String title;
-
-  const MapMarker({
-    required this.latitude,
-    required this.longitude,
-    required this.title,
-  });
 }
