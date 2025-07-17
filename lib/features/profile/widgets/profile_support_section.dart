@@ -7,13 +7,13 @@ class ProfileSupportSection extends StatelessWidget {
     required this.onFAQPressed,
     required this.onContactSupportPressed,
     required this.onAppInfoPressed,
-    required this.onLogoutPressed,
+    this.onLogoutPressed,
   });
 
   final VoidCallback onFAQPressed;
   final VoidCallback onContactSupportPressed;
   final VoidCallback onAppInfoPressed;
-  final VoidCallback onLogoutPressed;
+  final VoidCallback? onLogoutPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -64,14 +64,16 @@ class ProfileSupportSection extends StatelessWidget {
             subtitle: '버전 1.0.0',
             onTap: onAppInfoPressed,
           ),
-          _buildMenuDivider(),
-          _buildMenuItem(
-            icon: Icons.logout,
-            title: '로그아웃',
-            subtitle: '계정에서 로그아웃',
-            onTap: onLogoutPressed,
-            textColor: AppColors.error,
-          ),
+          if (onLogoutPressed != null) ...[
+            _buildMenuDivider(),
+            _buildMenuItem(
+              icon: Icons.logout,
+              title: '로그아웃',
+              subtitle: '계정에서 로그아웃',
+              onTap: onLogoutPressed!,
+              textColor: AppColors.error,
+            ),
+          ],
         ],
       ),
     );

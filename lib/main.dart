@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sound_bridge_app/app/app_initializer.dart';
 import 'package:sound_bridge_app/app/router.dart';
 import 'package:sound_bridge_app/app/theme.dart';
@@ -11,7 +12,7 @@ Future<void> main() async {
 
   await AppInitializer.initialize();
 
-  runApp(const SoundBridgeApp());
+  runApp(const ProviderScope(child: SoundBridgeApp()));
 
   FlutterNativeSplash.remove();
 }
