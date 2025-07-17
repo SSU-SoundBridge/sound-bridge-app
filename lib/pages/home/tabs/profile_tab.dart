@@ -1,17 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:sound_bridge_app/features/profile/widgets/profile_settings_section.dart';
+import 'package:sound_bridge_app/features/profile/widgets/profile_support_section.dart';
+import 'package:sound_bridge_app/features/profile/widgets/profile_tab_function.dart';
+import 'package:sound_bridge_app/features/user/user_provider.dart';
+import 'package:sound_bridge_app/models/user_model.dart';
 import 'package:sound_bridge_app/shared/constants/app_colors.dart';
 import 'package:sound_bridge_app/shared/widgets/common_sliver_app_bar.dart';
 
-class ProfileTab extends StatefulWidget {
+class ProfileTab extends ConsumerStatefulWidget {
   const ProfileTab({super.key});
 
   @override
-  State<ProfileTab> createState() => _ProfileTabState();
+  ConsumerState<ProfileTab> createState() => _ProfileTabState();
 }
 
-class _ProfileTabState extends State<ProfileTab> {
+class _ProfileTabState extends ConsumerState<ProfileTab> {
+  bool _notificationsEnabled = true;
+  bool _emailNotifications = false;
+  bool _locationEnabled = true;
   @override
   Widget build(BuildContext context) {
+    var userState = ref.watch(userProvider);
+    var isLoggedIn = userState.isLoggedIn;
+    var user = userState.user;
+
     return Scaffold(
       body: CustomScrollView(
         slivers: [
@@ -20,20 +34,35 @@ class _ProfileTabState extends State<ProfileTab> {
             centerIcon: Icons.person,
             expandedHeight: 120,
             showSettings: true,
-            onSettingsPressed: () {
-              // 설정 기능 구현
-            },
+            onSettingsPressed:
+                isLoggedIn
+                    ? () => context.go('/profile/edit')
+                    : () => ProfileTabFunction.showLoginRequiredDialog(context),
           ),
           SliverToBoxAdapter(
-            child: Column(
-              children: [
-                _buildProfileHeader(),
-                const SizedBox(height: 24),
-                _buildStats(),
-                const SizedBox(height: 24),
-                _buildMenuList(),
-                const SizedBox(height: 80),
-              ],
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  isLoggedIn
+                      ? _buildLoggedInView(context, user!)
+                      : _buildLoggedOutView(context),
+                  ProfileSupportSection(
+                    onFAQPressed: () => ProfileTabFunction.showFAQ(context),
+                    onContactSupportPressed:
+                        () => ProfileTabFunction.showContactSupport(context),
+                    onAppInfoPressed:
+                        () => ProfileTabFunction.showAppInfo(context),
+                    onLogoutPressed:
+                        isLoggedIn
+                            ? () => ProfileTabFunction.showLogoutDialog(
+                              context,
+                              ref,
+                            )
+                            : null,
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -41,7 +70,68 @@ class _ProfileTabState extends State<ProfileTab> {
     );
   }
 
-  Widget _buildProfileHeader() {
+  Widget _buildLoggedOutView(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: const [
+          BoxShadow(
+            color: AppColors.shadowLight,
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: TextButton(
+        onPressed: () => context.push('/login'),
+        style: TextButton.styleFrom(
+          padding: EdgeInsets.zero,
+          foregroundColor: AppColors.textPrimary,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
+        child: const Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('로그인이 필요합니다.', style: TextStyle(fontSize: 16)),
+            Icon(Icons.chevron_right),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoggedInView(BuildContext context, User user) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 12),
+        _buildProfileHeader(user),
+        _buildStats(user),
+        const SizedBox(height: 12),
+
+        ProfileSettingsSection(
+          notificationsEnabled: _notificationsEnabled,
+          emailNotifications: _emailNotifications,
+          locationEnabled: _locationEnabled,
+          onNotificationsChanged:
+              (val) => setState(() => _notificationsEnabled = val),
+          onEmailNotificationsChanged:
+              (val) => setState(() => _emailNotifications = val),
+          onLocationEnabledChanged:
+              (val) => setState(() => _locationEnabled = val),
+          onPrivacyPolicyPressed:
+              () => ProfileTabFunction.showPrivacyPolicy(context),
+          onTermsOfServicePressed:
+              () => ProfileTabFunction.showTermsOfService(context),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildProfileHeader(User user) {
     return Container(
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(20),
@@ -61,11 +151,11 @@ class _ProfileTabState extends State<ProfileTab> {
           Stack(
             children: [
               Container(
-                width: 80,
-                height: 80,
+                width: 100,
+                height: 100,
                 decoration: BoxDecoration(
                   gradient: AppColors.primaryGradient,
-                  borderRadius: BorderRadius.circular(40),
+                  borderRadius: BorderRadius.circular(80),
                 ),
                 child: const Icon(
                   Icons.person,
@@ -73,49 +163,47 @@ class _ProfileTabState extends State<ProfileTab> {
                   size: 40,
                 ),
               ),
-              Positioned(
-                bottom: 0,
-                right: 0,
-                child: Container(
-                  width: 24,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.surface, width: 2),
-                  ),
-                  child: const Icon(
-                    Icons.camera_alt,
-                    color: AppColors.textOnPrimary,
-                    size: 12,
-                  ),
-                ),
-              ),
             ],
           ),
           const SizedBox(height: 16),
-          const Text(
-            '음악 애호가',
-            style: TextStyle(
+          Text(
+            user.nickname,
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
             ),
           ),
           const SizedBox(height: 4),
-          const Text(
-            'music.lover@example.com',
-            style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
+          Text(
+            user.email,
+            style: const TextStyle(
+              fontSize: 14,
+              color: AppColors.textSecondary,
+            ),
+          ),
+          Text(
+            user.favoriteGenre.join(', '),
+            style: const TextStyle(
+              fontSize: 14,
+              color: AppColors.textSecondary,
+            ),
           ),
           const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildProfileStat('팔로워', '125'),
+              _buildProfileStatButton(
+                label: '팔로잉',
+                value: user.followingUserIds.length.toString(),
+                onPressed: () => ProfileTabFunction.showFollowingPage(context),
+              ),
               Container(width: 1, height: 30, color: AppColors.grey200),
-              _buildProfileStat('팔로잉', '89'),
-              Container(width: 1, height: 30, color: AppColors.grey200),
-              _buildProfileStat('참석한 공연', '23'),
+              _buildProfileStatButton(
+                label: '참석한 공연',
+                value: user.attendedPerformanceIds.length.toString(),
+                onPressed: () => ProfileTabFunction.showAttendancePage(context),
+              ),
             ],
           ),
         ],
@@ -123,55 +211,72 @@ class _ProfileTabState extends State<ProfileTab> {
     );
   }
 
-  Widget _buildProfileStat(String label, String value) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: AppColors.primary,
-          ),
+  Widget _buildProfileStatButton({
+    required String label,
+    required String value,
+    required VoidCallback onPressed,
+  }) {
+    return InkWell(
+      onTap: onPressed,
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppColors.primary,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 12,
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
-        ),
-      ],
+      ),
     );
   }
 
-  Widget _buildStats() {
+  Widget _buildStats(User user) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
           Expanded(
-            child: _buildStatCard(
+            child: _buildStatButton(
               icon: Icons.favorite,
               title: '찜한 공연',
-              value: '12',
+              value: user.bookmarkedPerformanceIds.length.toString(),
               color: AppColors.error,
+              onPressed: () => ProfileTabFunction.showBookmarksPage(context),
             ),
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: _buildStatCard(
+            child: _buildStatButton(
               icon: Icons.schedule,
               title: '예약 공연',
-              value: '3',
+              value: user.bookingIds.length.toString(),
               color: AppColors.warning,
+              onPressed: () => ProfileTabFunction.showBookingsPage(context),
             ),
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: _buildStatCard(
+            child: _buildStatButton(
               icon: Icons.star,
               title: '리뷰 작성',
-              value: '18',
+              value: user.reviewIds.length.toString(),
               color: AppColors.ratingStar,
+              onPressed: () => ProfileTabFunction.showReviewsPage(context),
             ),
           ),
         ],
@@ -179,131 +284,49 @@ class _ProfileTabState extends State<ProfileTab> {
     );
   }
 
-  Widget _buildStatCard({
+  Widget _buildStatButton({
     required IconData icon,
     required String title,
     required String value,
     required Color color,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: const [
-          BoxShadow(
-            color: AppColors.shadowLight,
-            blurRadius: 4,
-            offset: Offset(0, 1),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Icon(icon, color: color, size: 32),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 12,
-              color: AppColors.textSecondary,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMenuList() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: const [
-          BoxShadow(
-            color: AppColors.shadowLight,
-            blurRadius: 8,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          _buildMenuItem(
-            icon: Icons.person_outline,
-            title: '내 정보 관리',
-            onTap: () {},
-          ),
-          _buildMenuItem(
-            icon: Icons.favorite_outline,
-            title: '찜한 공연',
-            onTap: () {},
-          ),
-          _buildMenuItem(
-            icon: Icons.schedule_outlined,
-            title: '예약 내역',
-            onTap: () {},
-          ),
-          _buildMenuItem(icon: Icons.star_outline, title: '내 리뷰', onTap: () {}),
-          _buildMenuItem(
-            icon: Icons.notifications_outlined,
-            title: '알림 설정',
-            onTap: () {},
-          ),
-          _buildMenuItem(icon: Icons.help_outline, title: '도움말', onTap: () {}),
-          _buildMenuItem(
-            icon: Icons.info_outline,
-            title: '앱 정보',
-            onTap: () {},
-            isLast: true,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMenuItem({
-    required IconData icon,
-    required String title,
-    required VoidCallback onTap,
-    bool isLast = false,
+    required VoidCallback onPressed,
   }) {
     return InkWell(
-      onTap: onTap,
+      onTap: onPressed,
+      borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          border:
-              isLast
-                  ? null
-                  : const Border(
-                    bottom: BorderSide(color: AppColors.grey200, width: 1),
-                  ),
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: const [
+            BoxShadow(
+              color: AppColors.shadowLight,
+              blurRadius: 4,
+              offset: Offset(0, 1),
+            ),
+          ],
         ),
-        child: Row(
+        child: Column(
           children: [
-            Icon(icon, color: AppColors.textSecondary, size: 24),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: AppColors.textPrimary,
-                ),
+            Icon(icon, color: color, size: 32),
+            const SizedBox(height: 8),
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
               ),
             ),
-            const Icon(Icons.chevron_right, color: AppColors.grey400),
+            const SizedBox(height: 4),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 12,
+                color: AppColors.textSecondary,
+              ),
+            ),
           ],
         ),
       ),

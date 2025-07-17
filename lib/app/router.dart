@@ -4,9 +4,14 @@ import 'package:go_router/go_router.dart';
 // 페이지 imports
 import 'package:sound_bridge_app/pages/artist/artist_profile_page.dart';
 import 'package:sound_bridge_app/pages/home/home_page.dart';
+import 'package:sound_bridge_app/pages/home/tabs/profile_tab.dart';
 import 'package:sound_bridge_app/pages/performance/performance_detail_page.dart';
 import 'package:sound_bridge_app/pages/performance/performance_map_page.dart';
-import 'package:sound_bridge_app/pages/profile/profile_page.dart';
+import 'package:sound_bridge_app/pages/profile/find_id_page.dart';
+import 'package:sound_bridge_app/pages/profile/find_password_page.dart';
+import 'package:sound_bridge_app/pages/profile/login_page.dart';
+import 'package:sound_bridge_app/pages/profile/profile_edit_page.dart';
+import 'package:sound_bridge_app/pages/profile/signup_page.dart';
 import 'package:sound_bridge_app/pages/venue/venue_detail_page.dart';
 import 'package:sound_bridge_app/pages/venue/venue_list_page.dart';
 
@@ -56,7 +61,32 @@ class AppRouter {
       GoRoute(
         path: '/profile',
         name: 'profile',
-        builder: (context, state) => const ProfilePage(),
+        builder: (context, state) => const ProfileTab(),
+      ),
+      GoRoute(
+        path: '/login',
+        name: 'login',
+        builder: (context, state) => const LoginPage(),
+      ),
+      GoRoute(
+        path: '/signup',
+        name: 'signup',
+        builder: (context, state) => const SignupPage(),
+      ),
+      GoRoute(
+        path: '/profile/findPassword',
+        name: 'findPassword',
+        builder: (context, state) => const FindPasswordPage(),
+      ),
+      GoRoute(
+        path: '/profile/findId',
+        name: 'findId',
+        builder: (context, state) => const FindIdPage(),
+      ),
+      GoRoute(
+        path: '/profile/edit',
+        name: 'profile-edit',
+        builder: (context, state) => const ProfileEditPage(),
       ),
     ],
     errorBuilder:
